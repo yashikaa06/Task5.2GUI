@@ -1,0 +1,29 @@
+import tkinter as tk
+from tkinter import Scale
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+led_pin = 18 
+GPIO.setup(led_pin, GPIO.OUT)
+
+pwm = GPIO.PWM(led_pin, 100)
+pwm.start(0)
+
+def update_brightness(value):
+    pwm.ChangeDutyCycle(int(value))
+
+window = tk.Tk()
+window.title("LED Brightness Controller")
+
+brightness_slider = Scale(window, from_=0, to=100, orient="horizontal", command=update_brightness)
+brightness_slider.set(0)  
+brightness_slider.pack()
+
+def on_close():
+    pwm.stop()
+    GPIO.cleanup()
+    window.destroy()
+
+window.protocol("WM_DELETE_WINDOW", on_close)
+window.mainloop()
